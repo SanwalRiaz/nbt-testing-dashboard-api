@@ -1,0 +1,25 @@
+{
+  "name": "nbt-testing-dashboard-api",
+  "version": "0.0.1",
+  "description": "A sample API application to utilize in technical challenges for hiring.",
+  "main": "index.ts",
+  "scripts": {
+    "start": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node server.ts"
+  },
+  "author": "NBT Software Engineering <software@nbt.ag>",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/cors": "^8.0.0",
+    "@fastify/swagger": "^7.4.1",
+    "@types/http-errors": "^1.8.2",
+    "fastify": "^4.3.0",
+    "http-errors": "^2.0.0",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.6",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  }
+}

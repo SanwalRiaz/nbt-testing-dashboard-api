@@ -1,0 +1,97 @@
+### get list of projects
+GET http://localhost:3009/company/1/project
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.results.length > 0, "Invalid response body");
+});
+%}
+
+
+### Create new project
+POST http://localhost:3009/company/1/project
+Content-Type: application/json
+
+{
+    "name": "New Project",
+    "project_description": "New project description",
+    "start_date": "2022-06-06 01:12:15",
+    "end_date": "2022-06-12 03:14:34"
+}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 201, "Response status is not 201");
+});
+
+client.test("Check the data correct", function() {
+  client.assert(response.body.result.name === "New Project", "Invalid response body");
+});
+
+client.global.set("created_project_id", response.body.result.id);
+%}
+
+### get new created project
+GET http://localhost:3009/company/1/project/{{created_project_id}}
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.result.name === "New Project", "Invalid response body");
+});
+%}
+
+
+### get list of projects with the new project
+GET http://localhost:3009/company/1/project
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.results[0].name === "New Project", "Invalid response body");
+});
+%}
+
+### Update Project
+PUT http://localhost:3009/company/1/project/{{created_project_id}}
+Content-Type: application/json
+
+{
+    "name": "Cool Project",
+    "project_description": "New project description",
+    "start_date": "2022-06-06 01:12:15",
+    "end_date": "2022-06-12 03:14:34"
+}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 201");
+});
+
+client.test("Check the data correct", function() {
+  client.assert(response.body.result.name === "Cool Project", "Invalid response body");
+});
+%}
+
+
+### Delete Project
+DELETE http://localhost:3009/company/1/project/{{created_project_id}}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 204, "Response status is not 201");
+});
+%}

@@ -1,0 +1,102 @@
+### get list of users
+GET http://localhost:3009/company/1/user
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.results.length > 0, "Invalid response body");
+});
+%}
+
+### Create new user
+POST http://localhost:3009/company/1/user
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "name": "Test User",
+  "sex": "F",
+  "address": "54617 Sanchez Meadows Apt. 930\nEast Jared, HI 85303",
+  "mail": "testxxx@gmail.com",
+  "birthdate": "1971-07-24",
+  "title": "Test User"
+}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 201, "Response status is not 201");
+});
+
+client.test("Check the data correct", function() {
+  client.assert(response.body.result.username === "testuser", "Invalid response body");
+});
+
+client.global.set("created_user_id", response.body.result.id);
+%}
+
+### get new created user
+GET http://localhost:3009/company/1/user/{{created_user_id}}
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check response body", function() {
+  client.assert(response.body.result.username === "testuser", "Invalid response body");
+});
+%}
+
+
+### get list of users with the new user
+GET http://localhost:3009/company/1/user
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.results[0].username === "testuser", "Invalid response body");
+});
+%}
+
+### Update user
+PUT http://localhost:3009/company/1/user/{{created_user_id}}
+Content-Type: application/json
+
+{
+  "username": "cooluser",
+  "name": "Test User",
+  "sex": "F",
+  "address": "54617 Sanchez Meadows Apt. 930\nEast Jared, HI 85303",
+  "mail": "testxxx@gmail.com",
+  "birthdate": "1971-07-24",
+  "title": "Test User"
+}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 201");
+});
+
+client.test("Check the data correct", function() {
+  client.assert(response.body.result.username === "cooluser", "Invalid response body");
+});
+%}
+
+
+### Delete user
+DELETE http://localhost:3009/company/1/user/{{created_user_id}}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 204, "Response status is not 201");
+});
+%}

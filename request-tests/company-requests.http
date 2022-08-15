@@ -1,0 +1,113 @@
+### get list of companies
+GET http://localhost:3009/company
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.results.length > 0, "Invalid response body");
+});
+%}
+
+### get list of companies in second page
+GET http://localhost:3009/company?page=2
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check paging correct", function() {
+  client.assert(response.body.paging.previousPage === 1, "Invalid response body");
+});
+%}
+
+
+### Create new company
+POST http://localhost:3009/company
+Content-Type: application/json
+
+{
+  "company_name": "New Company",
+  "company_address": "Test address",
+  "company_phone": "0123 456 7890",
+  "company_email": "test@test.com",
+  "company_website": "https://example.com"
+}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 201, "Response status is not 201");
+});
+
+client.test("Check the data correct", function() {
+  client.assert(response.body.result.name === "New Company", "Invalid response body");
+});
+
+client.global.set("created_company_id", response.body.result.id);
+%}
+
+### get new created company
+GET http://localhost:3009/company/{{created_company_id}}
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.result.name === "New Company", "Invalid response body");
+});
+%}
+
+
+### get list of companies with the new company
+GET http://localhost:3009/company
+Content-Type: application/json
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+
+client.test("Check number of items", function() {
+  client.assert(response.body.results[0].name === "New Company", "Invalid response body");
+});
+%}
+
+### Update Company
+PUT http://localhost:3009/company/{{created_company_id}}
+Content-Type: application/json
+
+{
+  "company_name": "Cool Company",
+  "company_address": "Test address",
+  "company_phone": "0123 456 7890",
+  "company_email": "test@test.com",
+  "company_website": "https://example.com"
+}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 200, "Response status is not 201");
+});
+
+client.test("Check the data correct", function() {
+  client.assert(response.body.result.name === "Cool Company", "Invalid response body");
+});
+%}
+
+
+### Delete Company
+DELETE http://localhost:3009/company/{{created_company_id}}
+
+> {%
+client.test("Check response status", function() {
+  client.assert(response.status === 204, "Response status is not 201");
+});
+%}
