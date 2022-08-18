@@ -5,8 +5,8 @@ describe('NBT Company API Testing', () => {
       .its('headers')
       .its('content-type')
       .should('include', 'application/json');
-    cy.get('@request').then((todos) => {
-      expect(todos.status).to.eq(200);
+    cy.get('@request').then((response) => {
+      expect(response.status).to.eq(200);
     });
   });
 
@@ -50,16 +50,16 @@ describe('NBT Company API Testing', () => {
       company_phone: '1111111111',
       company_email: 'testingcompany@gmail.com',
       company_website: 'www.testingapicrud.com',
-    }).then((response, res) => {
+    }).then((response, companyID) => {
       expect(response.status).to.eq(201);
-      res = response.body.result.id;
-      cy.request(`/company/${res}`)
+      companyID = response.body.result.id;
+      cy.request(`/company/${companyID}`)
         .as('request')
         .its('headers')
         .its('content-type')
         .should('include', 'application/json');
-      cy.get('@request').then((todos) => {
-        expect(todos.status).to.eq(200);
+      cy.get('@request').then((response) => {
+        expect(response.status).to.eq(200);
       });
     });
   });
@@ -71,10 +71,10 @@ describe('NBT Company API Testing', () => {
       company_phone: '1111111111',
       company_email: 'testingcompany@gmail.com',
       company_website: 'www.testingapicrud.com',
-    }).then((response, res) => {
+    }).then((response, companyID) => {
       expect(response.status).to.eq(201);
-      res = response.body.result.id;
-      cy.request('PUT', `/company/${res}`, {
+      companyID = response.body.result.id;
+      cy.request('PUT', `/company/${companyID}`, {
         name: 'Testing API Company',
         company_address: 'Address Testing Api Company',
         company_phone: '1111111111',
@@ -102,6 +102,12 @@ describe('NBT Company API Testing', () => {
           .to.have.property('result')
           .to.have.property('company_website')
           .to.eq('www.testingapicrud.com');
+        cy.request({
+          method: 'GET',
+          url: `/company/${companyID + 1}`,
+          failOnStatusCode: false,
+        }).as('nextCompany');
+        cy.get('@nextCompany').its('status').should('equal', 404);
       });
     });
   });
@@ -112,10 +118,10 @@ describe('NBT Company API Testing', () => {
       company_phone: '1111111111',
       company_email: 'testingcompany@gmail.com',
       company_website: 'www.testingapicrud.com',
-    }).then((response, res) => {
+    }).then((response, companyID) => {
       expect(response.status).to.eq(201);
-      res = response.body.result.id;
-      cy.request('DELETE', `/company/${res}`).then((response) => {
+      companyID = response.body.result.id;
+      cy.request('DELETE', `/company/${companyID}`).then((response) => {
         expect(response.status).to.eq(204);
         expect(response.body).to.have.property('result').to.eq('true');
       });
