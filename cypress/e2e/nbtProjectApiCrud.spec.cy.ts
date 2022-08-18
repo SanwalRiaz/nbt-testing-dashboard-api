@@ -14,8 +14,8 @@ describe('NBT Project API Testing', () => {
         .its('headers')
         .its('content-type')
         .should('include', 'application/json');
-      cy.get('@request').then((todos) => {
-        expect(todos.status).to.eq(200);
+      cy.get('@request').then((response) => {
+        expect(response.status).to.eq(200);
       });
     });
   });
@@ -67,12 +67,20 @@ describe('NBT Project API Testing', () => {
     }).then((response, companyID) => {
       expect(response.status).to.eq(201);
       companyID = response.body.result.id;
-      const projectID = `${Math.floor(Math.random() * 100)}`;
-      cy.request(`company/${companyID}/project/${projectID}`).then(
-        (response) => {
-          expect(response.status).to.eq(200);
-        }
-      );
+      cy.request('POST', `company/${companyID}/project`, {
+        name: 'Project Testing API',
+        project_description: 'Project API Testing 123',
+        start_date: '12/12/2020',
+        end_date: '12/12/2022',
+      }).then((response, projectID) => {
+        expect(response.status).to.eq(201);
+        projectID = response.body.result.id;
+        cy.request(`company/${companyID}/project/${projectID}`).then(
+          (response) => {
+            expect(response.status).to.eq(200);
+          }
+        );
+      });
     });
   });
   it('Project API ID - PUT', () => {
@@ -116,6 +124,12 @@ describe('NBT Project API Testing', () => {
             .to.have.property('result')
             .to.have.property('end_date')
             .to.eq('12/12/2022');
+          cy.request({
+            method: 'GET',
+            url: `company/${companyID}/project/${projectID + 1}`,
+            failOnStatusCode: false,
+          }).as('nextProject');
+          cy.get('@nextProject').its('status').should('equal', 404);
         });
       });
     });
